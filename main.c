@@ -15,7 +15,7 @@ int main() {
    }
 
    // Check Armstrong numbers
-   printf("The Armstrong numbers are: ");
+   printf("The Armstrong numbers are:");
    for (int i = num1; i <= num2; i++) {
       if (isArmstrong(i)) {
          printf(" %d", i);
@@ -23,26 +23,26 @@ int main() {
    }
 
    // Check Palindrome numbers
-   printf("\nThe Palindrome numbers are: ");
+   printf("\nThe Palindromes are:");
    for (int i = num1; i <=num2; i++) {
       if (isPalindrome(i)) {
-         printf("%d ", i);
+         printf(" %d", i);
       }
    }
 
    // Check Prime numbers
-   printf("\nThe Prime numbers are: ");
+   printf("\nThe Prime numbers are:");
    for (int i = num1; i <= num2; i++) {
       if (isPrime(i)) {
-         printf("%d ", i);
+         printf(" %d", i);
       }
    }
 
    // Check Strong numbers
-   printf("\nThe Strong numbers are: ");
+   printf("\nThe Strong numbers are:");
    for (int i = num1; i <=num2; i++) {
       if (isStrong(i)) {
-         printf("%d ", i);// Print the number
+         printf(" %d", i);// Print the number
       }
    }
 
