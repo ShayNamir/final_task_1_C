@@ -1,24 +1,24 @@
 # Programs to use
-CC = gcc
-AR = ar
+CC := gcc
+AR := ar
 
 # Flags setup
-CFLAGS = -Wall -g
-LFLAGS = -shared
-SFLAGS = rcs
-FP = -fPIC
-MATHLIB = -lm
+CFLAGS := -Wall -g
+LFLAGS := -shared
+SFLAGS := rcs
+FP := -fPIC
+MATHLIB := -lm
 
 # File names
-MAIN = main.c
-HEADER = NumClass.h
-LIBB = basicClassification.c
-LIBLOOP = advancedClassificationLoop.c
-LIBREC = advancedClassificationRecursion.c
-LIBLS = libclassloops.a
-LIBRS = libclassrec.a
-LIBLD = libclassloops.so
-LIBRD = libclassrec.so
+MAIN := main.c
+HEADER := NumClass.h
+LIBB := basicClassification.c
+LIBLOOP := advancedClassificationLoop.c
+LIBREC := advancedClassificationRecursion.c
+LIBLS := libclassloops.a
+LIBRS := libclassrec.a
+LIBLD := libclassloops.so
+LIBRD := libclassrec.so
 
 # Phony tag for non-targeted commands
 .PHONY: all clean loops recursives recursived loopd
@@ -26,7 +26,7 @@ LIBRD = libclassrec.so
 # Build everything 
 all: mains maindloop maindrec loops recursives recursived loopd
 
-# Marcos to build libraries
+# Macros to build libraries
 loops: $(LIBLS)
 
 recursives: $(LIBRS)
@@ -37,15 +37,15 @@ loopd: $(LIBLD)
 
 # Build main programs
 
-# The main program with static libary of recursive implametation
+# The main program with a static library of recursive implementation
 mains: $(MAIN:.c=.o) $(LIBRS)
 	$(CC) $(CFLAGS) $< ./$(LIBRS) $(MATHLIB) -o $@
 
-# The main program with dynamic libary of loops implametation
+# The main program with a dynamic library of loops implementation
 maindloop: $(MAIN:.c=.o) $(LIBLD)
 	$(CC) $(CFLAGS) $< ./$(LIBLD) $(MATHLIB) -o $@
 
-# The main program with dynamic libary of recursive implametation
+# The main program with a dynamic library of recursive implementation
 maindrec: $(MAIN:.c=.o) $(LIBRD)
 	$(CC) $(CFLAGS) $< ./$(LIBRD) $(MATHLIB) -o $@
 
@@ -75,6 +75,6 @@ $(LIBREC:.c=.o): $(LIBREC) $(HEADER)
 $(LIBB:.c=.o): $(LIBB) $(HEADER)
 	$(CC) $(CFLAGS) -c $^ $(FP)
 
-# Clean command to cleanup all the compiled files (*.o, *.a, *.so, *.gch, mains, maindloop and maindrec)
+# Clean command to cleanup all the compiled files (*.o, *.a, *.so, *.gch, mains, maindloop, and maindrec)
 clean:
 	rm -f mains maindloop maindrec *.o *.a *.so *.gch
