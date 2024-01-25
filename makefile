@@ -1,47 +1,80 @@
+# Programs to use
 CC = gcc
-FLAGS = -Wall -g
-
 AR = ar
-OBJECTS_MAIN = main.o
-OBJECTS_ACL = advancedClassificationLoop.o
-OBJECTS_ACR = advancedClassificationRecursion.o
-OBJECTS_BC = basicClassification.o
+
+# Flags setup
+CFLAGS = -Wall -g
+LFLAGS = -shared
+SFLAGS = rcs
+FP = -fPIC
+MATHLIB = -lm
+
+# File names
+MAIN = main.c
 HEADER = NumClass.h
+LIBB = basicClassification.c
+LIBLOOP = advancedClassificationLoop.c
+LIBREC = advancedClassificationRecursion.c
+LIBLS = libclassloops.a
+LIBRS = libclassrec.a
+LIBLD = libclassloops.so
+LIBRD = libclassrec.so
 
-all: loops recursives recursived loopd mains maindloop maindrec
+# Phony tag for non-targeted commands
+.PHONY: all clean loops recursives recursived loopd
 
-loops: $(OBJECTS_BC) $(OBJECTS_ACL)
-	$(AR) rcs libclassloops.a $^
-	
-recursives: $(OBJECTS_BC) $(OBJECTS_ACR)
-	$(AR) rcs libclassrec.a $^
-	
-recursived: $(OBJECTS_BC) $(OBJECTS_ACR)
-	$(CC) $(FLAGS) -shared -fPIC -o libclassrec.so $^
-	
-loopd: $(OBJECTS_BC) $(OBJECTS_ACL)
-	$(CC) $(FLAGS) -shared -fPIC -o libclassloops.so $^
+# Build everything 
+all: mains maindloop maindrec loops recursives recursived loopd
 
-mains: $(OBJECTS_MAIN) libclassrec.a
-	$(CC) $(FLAGS) -o $@ $< libclassrec.a
+# Marcos to build libraries
+loops: $(LIBLS)
 
-maindloop: $(OBJECTS_MAIN)
-	$(CC) $(FLAGS) -o $@ $< ./libclassloops.so
+recursives: $(LIBRS)
 
-maindrec: $(OBJECTS_MAIN)
-	$(CC) $(FLAGS) -o $@ $< ./libclassrec.so
+recursived: $(LIBRD)
 
-main.o: main.c $(HEADER)
-	$(CC) $(FLAGS) -c main.c
+loopd: $(LIBLD)
 
-advancedClassificationLoop.o: advancedClassificationLoop.c $(HEADER)
-	$(CC) $(FLAGS) -fPIC -c advancedClassificationLoop.c
+# Build main programs
 
-advancedClassificationRecursion.o: advancedClassificationRecursion.c $(HEADER)
-	$(CC) $(FLAGS) -fPIC -c advancedClassificationRecursion.c
+# The main program with static libary of recursive implametation
+mains: $(MAIN:.c=.o) $(LIBRS)
+	$(CC) $(CFLAGS) $< ./$(LIBRS) $(MATHLIB) -o $@
 
-basicClassification.o: basicClassification.c $(HEADER)
-	$(CC) $(FLAGS) -fPIC -c basicClassification.c
+# The main program with dynamic libary of loops implametation
+maindloop: $(MAIN:.c=.o) $(LIBLD)
+	$(CC) $(CFLAGS) $< ./$(LIBLD) $(MATHLIB) -o $@
 
+# The main program with dynamic libary of recursive implametation
+maindrec: $(MAIN:.c=.o) $(LIBRD)
+	$(CC) $(CFLAGS) $< ./$(LIBRD) $(MATHLIB) -o $@
+
+# Compile the main program to an object file
+$(MAIN:.c=.o): $(MAIN) $(HEADER)
+	$(CC) $(CFLAGS) -c $^
+
+# Building all necessary libraries
+$(LIBRD): $(LIBREC:.c=.o) $(LIBB:.c=.o)
+	$(CC) $(LFLAGS) $(CFLAGS) $^ -o $@
+
+$(LIBLD): $(LIBLOOP:.c=.o) $(LIBB:.c=.o)
+	$(CC) $(LFLAGS) $(CFLAGS) $^ -o $@
+
+$(LIBLS): $(LIBLOOP:.c=.o) $(LIBB:.c=.o)
+	$(AR) $(SFLAGS) $@ $^
+
+$(LIBRS): $(LIBREC:.c=.o) $(LIBB:.c=.o)
+	$(AR) $(SFLAGS) $@ $^
+
+$(LIBLOOP:.c=.o): $(LIBLOOP) $(HEADER)
+	$(CC) $(CFLAGS) -c $^ $(FP)
+
+$(LIBREC:.c=.o): $(LIBREC) $(HEADER)
+	$(CC) $(CFLAGS) -c $^ $(FP)
+
+$(LIBB:.c=.o): $(LIBB) $(HEADER)
+	$(CC) $(CFLAGS) -c $^ $(FP)
+
+# Clean command to cleanup all the compiled files (*.o, *.a, *.so, *.gch, mains, maindloop and maindrec)
 clean:
-	rm -f *.o *.so *.a mains maindloop maindrec
+	rm -f mains maindloop maindrec *.o *.a *.so *.gch
